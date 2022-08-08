@@ -4,6 +4,7 @@ from pymongo import MongoClient
 
 
 
+
 class MongoConector:
     "class to connect with MongoDB"
     def __init__(self) -> None:
@@ -26,7 +27,7 @@ class MongoConector:
         repeated = self.collection.count_documents({"name": task})
      # repeated verify if the currently task is already in database.
         if repeated > 0:
-            return [f"already exist a task with the same name: {task}",406]
+            return [f"already exist a task with the same name: {task}",200]
         self.collection.insert_one({"name": task,"date": datetime.now(),"status": status})
         return [f"task {task} included",200]
 
