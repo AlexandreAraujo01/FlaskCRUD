@@ -1,4 +1,7 @@
+"class MongoDB"
+from  datetime import datetime
 from pymongo import MongoClient
+
 
 
 class MongoConector:
@@ -18,21 +21,29 @@ class MongoConector:
         task = self.collection.find_one({"name": task_name})
         return task
 
-    def post_task(self,task: dict) -> str:
+    def post_task(self,task:str,status:str) -> str:
         "insert a task in database"
-        repeated = self.collection.count_documents({"name": task['name'], "status": "todo"})
-     # repeated verify if the currently task is alredy in database.
+        repeated = self.collection.count_documents({"name": task})
+     # repeated verify if the currently task is already in database.
         if repeated > 0:
-            return f"alredy exist a task with the same name: {task['name']}"
-        self.collection.insert_one(task)
-        return f"task {task['name']} included"
+            return [f"already exist a task with the same name: {task}",406]
+        self.collection.insert_one({"name": task,"date": datetime.now(),"status": status})
+        return [f"task {task} included",200]
 
     def delete_task(self,task_name: str) -> None:
         "delete a task in database"
-        self.collection.delete_one({"name":task_name,"status": "todo"})
+        self.collection.delete_one({"name":task_name})
 
-    def change_status(self,task_name: str,status: str) -> None:
+    def delete_many(self,name: str) -> None:
+        "delete all tasks"
+        self.collection.delete_many({"name": name})
+
+    def change_status(self,task_name: str,status: str) -> str:
         "change the status of task"
         new_status = {"$set": {"status": status}}
-        self.collection.update_one({"name": task_name},new_status)
-
+        finded = self.collection.count_documents({"name": task_name})
+        if finded > 0:
+            self.collection.update_one({"name": task_name},new_status)
+            return [f"task: {task_name} teve o status atualizado para {status}",201]
+        else:
+            return [f"task {task_name} não encontrada.",404]
