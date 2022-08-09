@@ -15,8 +15,7 @@ CORS(app,resources={r'/*' : {"origins": '*'}})
 def all_tasks():
     "return all tasks"
     tasks = db.get_all_tasks()
-    response = jsonify(tasks=str(tasks))
-    return make_response(response,200)
+    return make_response(tasks,200)
 
 @app.route("/PostTask",methods=["POST"])
 def post_task():
