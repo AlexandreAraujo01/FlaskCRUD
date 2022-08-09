@@ -1,6 +1,7 @@
 "class MongoDB"
 from  datetime import datetime
 from pymongo import MongoClient
+import bson.json_util as json_util
 
 
 
@@ -15,12 +16,12 @@ class MongoConector:
     def get_all_tasks(self) -> list:
         "get all current tasks"
         tasks = self.collection.find()
-        return list(tasks)
+        return json_util.dumps(list(tasks))
 
     def get_single_task(self,task_name: str) -> str:
         "get a task based on name"
         task = self.collection.find_one({"name": task_name})
-        return task
+        return json_util.dumps(task)
 
     def post_task(self,task:str,status:str) -> str:
         "insert a task in database"
